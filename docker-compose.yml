@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bd_lab2_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bd_lab2
+      POSTGRES_USER: bd_user
+      POSTGRES_PASSWORD: bd_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
+      - ./исходные данные:/data:ro
+      - pgdata_bd_lab2:/var/lib/postgresql/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: bd_lab2_clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: bd_lab2
+      CLICKHOUSE_USER: bd_ch_user
+      CLICKHOUSE_PASSWORD: bd_ch_pass
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    volumes:
+      - chdata_bd_lab2:/var/lib/clickhouse
+
+  spark:
+    build:
+      context: ./docker/spark
+    container_name: bd_lab2_spark
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - clickhouse
+    environment:
+      SPARK_MODE: client
+    volumes:
+      - ./spark:/opt/spark-apps
+      - ./scripts:/opt/spark-scripts
+    working_dir: /opt/spark-apps
+    command: ["sleep", "infinity"]
+
+volumes:
+  pgdata_bd_lab2:
+  chdata_bd_lab2:
