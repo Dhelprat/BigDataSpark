@@ -50,6 +50,9 @@
 - `dim_date = 364`
 - Пропуски внешних ключей в `fact_sales`: **0**
 
+### Визуализация схемы БД:
+![](img\dim_customer.svg)
+
 ### ClickHouse (витрины)
 - `report_sales_by_products = 1000`
 - `report_sales_by_customers = 1000`
